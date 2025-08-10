@@ -1,13 +1,25 @@
-FROM python:3.12-slim
+FROM python:3.11-slim
 
-WORKDIR /app/OpenManus
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 
-RUN apt-get update && apt-get install -y --no-install-recommends git curl \
-    && rm -rf /var/lib/apt/lists/* \
-    && (command -v uv >/dev/null 2>&1 || pip install --no-cache-dir uv)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential gcc git curl \
+    libffi-dev libpq-dev libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --upgrade pip setuptools wheel \
+    && pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN uv pip install --system -r requirements.txt
+ENV PORT=3000
+EXPOSE 3000
 
-CMD ["bash"]
+# troque se o projeto usar outro comando (me diga que eu ajusto)
+CMD ["python", "main.py"]
