@@ -20,6 +20,7 @@ COPY . .
 
 ENV PORT=3000
 EXPOSE 3000
+ENV PROMPT="Olá do Coolify"
 
 # troque se o projeto usar outro comando (me diga que eu ajusto)
-CMD ["python", "main.py"]
+CMD ["/bin/sh","-lc","python main.py --prompt \"$PROMPT\""]
